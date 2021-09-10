@@ -119,6 +119,8 @@ namespace ZBC_OOP_Battleship.Forms
 
         }
 
+        
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Enter)
@@ -137,7 +139,6 @@ namespace ZBC_OOP_Battleship.Forms
             // Call the base class
             return base.ProcessCmdKey(ref msg, keyData);
         }
-
 
         private void StartSetUp()
         {

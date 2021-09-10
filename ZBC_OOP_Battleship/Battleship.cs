@@ -124,49 +124,7 @@ namespace ZBC_OOP_Battleship
             }
         }
 
-        public Panel CreatePanel(Control mainControl)
-        {
-            mainPanel = new Panel();
-
-            if (direction == ShipDirection.East)
-            {
-                mainPanel.Width = Constants.CellSize * lenght;
-                mainPanel.Height = Constants.CellSize;
-            }
-            else
-            {
-                mainPanel.Width = Constants.CellSize;
-                mainPanel.Height = Constants.CellSize * lenght;
-            }
-
-            mainPanel.Paint += MainPanelPaint;
-
-            mainControl.Controls.Add(mainPanel);
-            return mainPanel;
-        }
-
-        private void MainPanelPaint(object sender, PaintEventArgs e)
-        {
-            //e.Graphics.FillRectangle(new SolidBrush(Constants.ShipInnerColor), new Rectangle(0, 0,
-            //                                                                                 mainPanel.Width,
-            //                                                                                 mainPanel.Height));
-
-            //int borderSize = 3;
-            //Pen borderPen = new Pen(new SolidBrush(Constants.ShipBorderColor), borderSize);
-
-            //for (int i = 0; i < lenght; i++)
-            //{
-            //    if(direction == ShipDirection.East)
-            //    {
-            //        e.Graphics.DrawRectangle(borderPen, new Rectangle(Constants.CellSize * i, 0, Constants.CellSize, Constants.CellSize));
-            //    }
-                
-            //}
-
-            
-            
-
-            
-        }
+        
+       
     }
 }
