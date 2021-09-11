@@ -17,6 +17,15 @@ namespace ZBC_OOP_Battleship
             set { sectionCell = value; }
         }
 
+        private int sectionNumber;
+
+        public int SectionNumber
+        {
+            get { return sectionNumber; }
+            set { sectionNumber = value; }
+        }
+
+
         private bool isHit;
 
         public bool IsHit
@@ -25,8 +34,9 @@ namespace ZBC_OOP_Battleship
             set { isHit = value; }
         }
 
-        public ShipSection(Point sectionCell)
+        public ShipSection(Point sectionCell, int sectionNumber)
         {
+            this.sectionNumber = sectionNumber;
             this.sectionCell = sectionCell;
             this.isHit = false;
         }

@@ -9,17 +9,25 @@ namespace ZBC_OOP_Battleship
 {
     public class BattleControl
     {
+        // events
+        public event EventHandler<StateChangeEventArgs> StateChange;
+
         private BattleBoard playerOneBoard;
         private BattleBoard playerTwoBoard;
 
         private bool turnHasPlayed;
 
-        private CurrentTurn currentTurn;
+        private GameState gameState;
 
-        public CurrentTurn CurrentTurn
+        public GameState GameState
         {
-            get { return currentTurn; }
-            set { currentTurn = value; }
+            get { return gameState; }
+            set { gameState = value; OnStateChange(value); }
+        }
+
+        public void OnStateChange(GameState state)
+        {
+            StateChange?.Invoke(this, new StateChangeEventArgs(state));
         }
 
 
@@ -28,13 +36,13 @@ namespace ZBC_OOP_Battleship
             turnHasPlayed = false;
         }
 
-        public void CreatePlayerOneBoard(List<Battleship> ships)
+        private void CreatePlayerOneBoard(List<Battleship> ships)
         {
             playerOneBoard = new BattleBoard(ships);
 
         }
 
-        public void CreatePlayerTwoBoard(List<Battleship> ships)
+        private void CreatePlayerTwoBoard(List<Battleship> ships)
         {
             playerTwoBoard = new BattleBoard(ships);
         }
@@ -51,6 +59,8 @@ namespace ZBC_OOP_Battleship
 
         public bool HitResult(Point cell)
         {
+            bool result = false;
+
             if (turnHasPlayed)
             {
                 return false;
@@ -58,7 +68,7 @@ namespace ZBC_OOP_Battleship
 
             BattleBoard board;
 
-            if (currentTurn == CurrentTurn.PlayerOne)
+            if (gameState == GameState.PlayerOneTurn)
             {
                 board = playerOneBoard;
             }
@@ -77,11 +87,21 @@ namespace ZBC_OOP_Battleship
                     EndMatch();
                 }
 
-                return true;
+                result = true;
             }
 
-            return false;
+            ChangeTurn();
 
+            return result;
+
+        }
+
+        public GameState StartMatch(List<Battleship> playerOneShips, List<Battleship> playerTwoShips)
+        {
+            CreatePlayerOneBoard(playerOneShips);
+            CreatePlayerTwoBoard(playerTwoShips);
+            gameState = GameState.PlayerOneTurn;
+            return gameState;
         }
 
         private void EndMatch()
@@ -106,23 +126,25 @@ namespace ZBC_OOP_Battleship
 
         public void ChangeTurn()
         {
-            if(currentTurn == CurrentTurn.PlayerOne)
+            if(GameState == GameState.PlayerOneTurn)
             {
-                currentTurn = CurrentTurn.Playertwo;
+                GameState = GameState.PlayerTwoTurn;
             }
             else
             {
-                currentTurn = CurrentTurn.PlayerOne;
+                GameState = GameState.PlayerOneTurn;
             }
 
             turnHasPlayed = false;
+
+            
         }
 
         public bool RequestShipMovement(Battleship ship, MovementDirection direction)
         {
             BattleBoard board;
 
-            if (currentTurn == CurrentTurn.PlayerOne)
+            if (GameState == GameState.PlayerOneTurn)
             {
                 board = playerOneBoard;
             }

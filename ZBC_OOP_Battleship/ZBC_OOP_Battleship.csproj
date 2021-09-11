@@ -46,12 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BattleBoard.cs" />
-    <Compile Include="BattleControl.cs" />
-    <Compile Include="Battleship.cs" />
+    <Compile Include="Events\StateChangeEventArgs.cs" />
+    <Compile Include="GUI\EnemyBoard.cs" />
+    <Compile Include="GUI\PlayerBoard.cs" />
+    <Compile Include="GUI\PlayingBoard.cs" />
+    <Compile Include="Logic\BattleBoard.cs" />
+    <Compile Include="Logic\BattleControl.cs" />
+    <Compile Include="Data\Battleship.cs" />
     <Compile Include="GUI\BoardDisplay.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Enumerators.cs" />
+    <Compile Include="Data\Constants.cs" />
+    <Compile Include="Data\Enumerators.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,7 +68,7 @@
     <Compile Include="Forms\MainBattleForm.Designer.cs">
       <DependentUpon>MainBattleForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GridSlot.cs" />
+    <Compile Include="Data\GridSlot.cs" />
     <Compile Include="GUI\ShipDisplay.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -94,9 +98,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Logic\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

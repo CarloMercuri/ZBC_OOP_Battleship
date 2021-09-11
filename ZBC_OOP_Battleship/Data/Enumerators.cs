@@ -20,10 +20,11 @@ namespace ZBC_OOP_Battleship
         Down
     }
 
-    public enum CurrentTurn
+    public enum EnemyBoardSlotStatus
     {
-        PlayerOne,
-        Playertwo
+        SuccessfulHit,
+        FailedHit,
+        NotTried
     }
 
     public enum GameState
@@ -33,6 +34,8 @@ namespace ZBC_OOP_Battleship
         WaitingToStart,
         PlayerOneTurn,
         PlayerTwoTurn,
-        GameEnd
+        GameEnd,
+        WaitingToChangeTurn,
+        WaitingToEndTurn
     }
 }

@@ -8,32 +8,43 @@ using System.Windows.Forms;
 
 namespace ZBC_OOP_Battleship
 {
-    public class BoardDisplay
+    public class PlayingBoard
     {
-        private List<Point> crossLocations;
+        private Panel mainPanel { get; set; }
         private Panel battlePanel;
-        private Panel mainPanel;
-        private List<ShipDisplay> activeShips;
-        private bool isPlayerBoard;
 
+        private bool isActive;
 
-        public BoardDisplay()
+        public bool IsActive
         {
-            crossLocations = new List<Point>();
-            activeShips = new List<ShipDisplay>();
+            get { return isActive; }
+            set { isActive = value; }
         }
 
-        /// <summary>
-        /// Creates a board visual, playerBoard true if it's the player's own board, false if it's the adversary's
-        /// </summary>
-        /// <param name="parentControl"></param>
-        /// <param name="playerBoard"></param>
-        /// <param name="locX"></param>
-        /// <param name="locY"></param>
-        /// <returns></returns>
-        public Panel CreatePanel(Control parentControl, bool playerBoard, int locX = 0, int locY = 0)
+
+        public Panel BattlePanel
         {
-            isPlayerBoard = playerBoard;
+            get { return battlePanel; }
+            set { battlePanel = value; }
+        }
+
+
+        public List<ShipDisplay> activeShips { get; set; }
+
+        public virtual void UpdateBoard()
+        {
+
+        }
+
+        public virtual void UpdateBoard(List<Battleship> ships)
+        {
+
+        }
+
+        public virtual void CreatePanel(Control parentControl, bool playerBoard, int locX = 0, int locY = 0)
+        {
+            activeShips = new List<ShipDisplay>();
+
 
             // The header panel
             mainPanel = new Panel();
@@ -53,43 +64,26 @@ namespace ZBC_OOP_Battleship
             battlePanel.BorderStyle = BorderStyle.FixedSingle;
 
             battlePanel.Paint += BattlePanelPaint;
-            //battlePanel.MouseMove += checkerPanel;
+            battlePanel.MouseEnter += BattlePanelMouseEnter;
+            BattlePanel.MouseLeave += BattlePanelMouseLeave;
 
             mainPanel.Controls.Add(battlePanel);
 
             parentControl.Controls.Add(mainPanel);
 
-            return mainPanel;
         }
 
-        public void UpdateEnemyBoard()
+        private void BattlePanelMouseLeave(object sender, EventArgs e)
         {
-
+            Cursor.Current = Cursors.Default;
         }
 
-        public void UpdatePlayerShips(List<Battleship> ships)
+        private void BattlePanelMouseEnter(object sender, EventArgs e)
         {
-            activeShips.Clear();
-
-            foreach(Battleship ship in ships)
-            {
-                ShipDisplay shipDisplay = new ShipDisplay(ship, battlePanel);
-
-                if(ship.Direction == ShipDirection.North)
-                {
-                    shipDisplay.SetLocation(GetTopLeftCellCoords(ship.StartCell.X, ship.StartCell.Y - (ship.Lenght - 1)));
-                } 
-                else
-                {
-                    shipDisplay.SetLocation(GetTopLeftCellCoords(ship.StartCell.X, ship.StartCell.Y));
-                }
-               
-                activeShips.Add(shipDisplay);
-            }
+            Cursor.Current = Cursors.Hand;
         }
-               
-       
-        private Point GetTopLeftCellCoords(int cellX, int cellY)
+
+        public Point GetTopLeftCellCoords(int cellX, int cellY)
         {
             return new Point(Constants.CellSize * cellX, Constants.CellSize * cellY);
         }
@@ -103,7 +97,7 @@ namespace ZBC_OOP_Battleship
         {
             mainPanel.Visible = true;
         }
-
+               
         public void CenterHorizontalLocation(int formWidth, int y)
         {
             mainPanel.Location = new Point(formWidth / 2 - mainPanel.Width / 2, y);
@@ -112,6 +106,28 @@ namespace ZBC_OOP_Battleship
         public void CenterVerticalLocation(int formHeight, int x)
         {
             mainPanel.Location = new Point(x, formHeight / 2 - mainPanel.Height / 2);
+        }
+
+        public void AddClickEvent(Action<Point> method)
+        {
+            // TO-DO: Find out the better way
+            battlePanel.Click += (sender, args) =>
+            {
+                MouseEventArgs margs = (MouseEventArgs)args;
+                int cellX = margs.X / Constants.CellSize;
+                int cellY = margs.Y / Constants.CellSize;
+
+                Point cell = new Point(cellX, cellY);
+                method(cell);
+            };
+        }
+
+        private Point GetCellFromCoords(int x, int y)
+        {
+            int cellX = x / Constants.CellSize;
+            int cellY = y / Constants.CellSize;
+
+            return new Point(cellX, cellY);
         }
 
         public void SetLocation(int x, int y)
@@ -129,30 +145,6 @@ namespace ZBC_OOP_Battleship
             };
         }
 
-        public void AddClickEvent(Action<Point> method)
-        {
-            // TO-DO: Find out the better way
-            battlePanel.Click += (sender, args) =>
-            {
-                MouseEventArgs margs = (MouseEventArgs)args;
-                Point cell = GetCellFromCoords(margs.X, margs.Y);
-                method(cell);
-            };
-        }
-
-        private Point GetCellFromCoords(int x, int y)
-        {
-            int cellX = x / Constants.CellSize;
-            int cellY = y / Constants.CellSize;
-
-            return new Point(cellX, cellY);
-        }
-
-        public void SetCross(Point cell)
-        {
-            crossLocations.Add(cell);
-            battlePanel.Invalidate();
-        }
 
         private void HeaderPanelPaint(object sender, PaintEventArgs e)
         {
@@ -181,7 +173,7 @@ namespace ZBC_OOP_Battleship
             }
         }
 
-        private void BattlePanelPaint(object sender, PaintEventArgs e)
+        public virtual void BattlePanelPaint(object sender, PaintEventArgs e)
         {
             int xPos = 0;
             int yPos = 0;

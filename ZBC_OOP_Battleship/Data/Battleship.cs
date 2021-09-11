@@ -84,15 +84,20 @@ namespace ZBC_OOP_Battleship
             {
                 for (int i = 0; i < lenght; i++)
                 {
-                    sections.Add(new ShipSection(new Point(StartCell.X + i, StartCell.Y)));
+                    sections.Add(new ShipSection(new Point(StartCell.X + i, StartCell.Y), i));
                 }
             } 
             else
             {
                 for (int i = 0; i < lenght; i++)
                 {
-                    sections.Add(new ShipSection(new Point(StartCell.X, StartCell.Y - i)));
+                    sections.Add(new ShipSection(new Point(StartCell.X, StartCell.Y - i), i));
                 }
+            }
+
+            for (int i = 0; i < sections.Count; i++)
+            {
+                sections[i].IsHit = true;
             }
         }
 

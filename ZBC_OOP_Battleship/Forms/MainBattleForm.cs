@@ -13,19 +13,26 @@ namespace ZBC_OOP_Battleship.Forms
 {
     public partial class MainBattleForm : Form
     {
-        private BoardDisplay PlayerOneBoard;
-        private BoardDisplay PlayerOneEnemyBoard;
+        private PlayerBoard PlayerOneBoard;
+        private EnemyBoard PlayerOneEnemyBoard;
 
-        private BoardDisplay PlayerTwoBoard;
-        private BoardDisplay PlayerTwoEnemyBoard;
+        private PlayerBoard PlayerTwoBoard;
+        private EnemyBoard PlayerTwoEnemyBoard;
 
         private BattleControl _control;
 
-        private GameState gameState;
+        private GameState localGameState;
+        private GameState mainGameState;
         private Label overHeadLabel;
-        private Button btn_SetupNext;
+        //private Button btn_SetupNext;
+        private Label label_Instruction;
 
         private Label label_Interstitial;
+
+        private bool turnActionTaken;
+
+        private List<Battleship> playerOneShips;
+        private List<Battleship> playerTwoShips;
 
 
         public MainBattleForm()
@@ -63,78 +70,163 @@ namespace ZBC_OOP_Battleship.Forms
             overHeadLabel.Visible = false;
             overHeadPanel.Controls.Add(overHeadLabel);
 
+            //
+            // label_Instruction
+            //
+
+            label_Instruction = new Label();
+            label_Instruction.Font = new Font(FontFamily.GenericSansSerif, 12, FontStyle.Regular);
+            label_Instruction.Location = new Point(900, 250);
+            label_Instruction.AutoSize = true;
+            this.Controls.Add(label_Instruction);
+            label_Instruction.Visible = false;
+
             // btn_setupNext
-            btn_SetupNext = new Button();
-            btn_SetupNext.Size = new Size(100, 60);
-            btn_SetupNext.Font = new Font(FontFamily.GenericSansSerif, 14, FontStyle.Bold);
-            btn_SetupNext.Text = "Done";
-            btn_SetupNext.Location = new Point(1000, 300);
-            btn_SetupNext.Click += btn_SetupNextClick;
-            this.Controls.Add(btn_SetupNext);
-           
+            //btn_SetupNext = new Button();
+            //btn_SetupNext.Size = new Size(100, 60);
+            //btn_SetupNext.Font = new Font(FontFamily.GenericSansSerif, 14, FontStyle.Bold);
+            //btn_SetupNext.Text = "Done";
+            //btn_SetupNext.Location = new Point(1000, 300);
+            //btn_SetupNext.Click += btn_SetupNextClick;
+            //this.Controls.Add(btn_SetupNext);
+
 
             // Boards initialization
-            PlayerOneBoard = new BoardDisplay();
+            //PlayerOneBoard = new BoardDisplay();
+            //PlayerOneBoard.CreatePanel(this, true, 80, 50);
+            //PlayerOneBoard.AddClickEvent(PlayerCellClicked);
+            //PlayerOneBoard.AddMouseMoveEvent(PlayerBoardMouseMove);
+            //PlayerOneBoard.Hide();
+
+            PlayerOneBoard = new PlayerBoard();
             PlayerOneBoard.CreatePanel(this, true, 80, 50);
             PlayerOneBoard.AddClickEvent(PlayerCellClicked);
             PlayerOneBoard.AddMouseMoveEvent(PlayerBoardMouseMove);
             PlayerOneBoard.Hide();
 
-            PlayerOneEnemyBoard = new BoardDisplay();
+            PlayerOneEnemyBoard = new EnemyBoard();
             PlayerOneEnemyBoard.CreatePanel(this, false);
             PlayerOneEnemyBoard.Hide();
+            PlayerOneEnemyBoard.AddClickEvent(EnemyCellClicked);
 
-            PlayerTwoBoard = new BoardDisplay();
+            PlayerTwoBoard = new PlayerBoard();
             PlayerTwoBoard.CreatePanel(this, true, 700, 50);
             PlayerTwoBoard.Hide();
 
-            PlayerTwoEnemyBoard = new BoardDisplay();
+            PlayerTwoEnemyBoard = new EnemyBoard();
             PlayerTwoEnemyBoard.CreatePanel(this, false);
             PlayerTwoEnemyBoard.Hide();
+            PlayerOneEnemyBoard.AddClickEvent(EnemyCellClicked);
 
-            gameState = GameState.PlayerOneSettingUp;
+            localGameState = GameState.PlayerOneSettingUp;
 
             // initiate control
             _control = new BattleControl();
-            List<Battleship> ships1 = new List<Battleship>();
-            ships1.Add(new Battleship(new Point(2, 4), 5, ShipDirection.East));
-            ships1.Add(new Battleship(new Point(1, 5), 2, ShipDirection.North));
-            ships1.Add(new Battleship(new Point(8, 7), 4, ShipDirection.North));
 
-            List<Battleship> ships2 = new List<Battleship>();
-            ships2.Add(new Battleship(new Point(2, 4), 5, ShipDirection.East));
-            ships2.Add(new Battleship(new Point(1, 5), 2, ShipDirection.North));
-            ships2.Add(new Battleship(new Point(8, 7), 4, ShipDirection.North));
+            // TEMP
+            playerOneShips = new List<Battleship>();
+            playerOneShips.Add(new Battleship(new Point(2, 4), 5, ShipDirection.East));
+            playerOneShips.Add(new Battleship(new Point(1, 5), 2, ShipDirection.North));
+            playerOneShips.Add(new Battleship(new Point(8, 7), 4, ShipDirection.North));
 
-            _control.CreatePlayerOneBoard(ships1);
-            _control.CreatePlayerTwoBoard(ships2);
-
-            //_control.CreatePlayerOneBoard()
+            playerTwoShips = new List<Battleship>();
+            playerTwoShips.Add(new Battleship(new Point(2, 4), 5, ShipDirection.East));
+            playerTwoShips.Add(new Battleship(new Point(1, 5), 2, ShipDirection.North));
+            playerTwoShips.Add(new Battleship(new Point(8, 7), 4, ShipDirection.North));
 
 
-
+            _control.StateChange += StateChangeEvent;
             // ALWAYS LAST
             label_Interstitial.BringToFront();
             StartSetUp();
 
         }
 
-        
+        private void EnemyCellClicked(Point cell)
+        {
+            bool hit = _control.HitResult(cell);
+            PlayerOneEnemyBoard.UpdateHitResult(cell, hit);
+            PlayerTwoEnemyBoard.UpdateHitResult(cell, hit);
+        }
+
+        private void StateChangeEvent(object sender, StateChangeEventArgs args)
+        {
+            // Change it regardless
+            mainGameState = args.GameState;
+
+            switch (args.GameState)
+            {
+                case GameState.PlayerOneTurn:
+                    localGameState = GameState.WaitingToEndTurn;
+                    TurnEnd();
+                    break;
+
+                case GameState.PlayerTwoTurn:
+                    localGameState = GameState.WaitingToEndTurn;
+                    TurnEnd();
+                    break;
+            }
+        }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Enter)
             {
-                switch (gameState)
+                switch (localGameState)
                 {
                     case GameState.WaitingToStart:
+                        label_Instruction.Visible = false;
                         InitiateGame();
+                        break;
+
+                    case GameState.PlayerOneSettingUp:
+                        PlayerOneBoard.Hide();
+                        PlayerTwoBoard.Show();
+                        overHeadLabel.Text = "Player 2: Set up your board";
+                        label_Instruction.Text = "Press ENTER to start match!";
+                        localGameState = GameState.PlayerTwoSettingUp;
+                        break;
+
+                    case GameState.PlayerTwoSettingUp:
+                        localGameState = GameState.WaitingToStart;
+                        PlayerOneBoard.Hide();
+                        PlayerTwoBoard.Hide();
+                        label_Interstitial.Visible = true;
+                        label_Interstitial.Text = "Player 1: Press ENTER to start (Player 2 look away!)";
+                        break;
+
+                    case GameState.WaitingToChangeTurn:
+
+                        if(mainGameState == GameState.PlayerOneTurn)
+                        {
+                            PlayerOneEnemyBoard.IsActive = true;
+                            PlayerTwoEnemyBoard.IsActive = false;
+                            PlayerTwoBoard.Hide();
+                            PlayerTwoEnemyBoard.Hide();
+                            PlayerOneBoard.Show();
+                            PlayerOneEnemyBoard.Show();
+                            localGameState = GameState.PlayerOneTurn;
+                        }
+                        else if(mainGameState == GameState.PlayerTwoTurn)
+                        {
+                            PlayerTwoEnemyBoard.IsActive = true;
+                            PlayerOneEnemyBoard.IsActive = false;
+                            PlayerOneBoard.Hide();
+                            PlayerOneEnemyBoard.Hide();
+                            PlayerTwoBoard.Show();
+                            PlayerTwoEnemyBoard.Show();
+                            localGameState = GameState.PlayerTwoTurn;
+                        }
+
                         break;
 
                     default:
                         break;
                 }
+
             }
+
+            label1.Text = localGameState.ToString();
 
             // Call the base class
             return base.ProcessCmdKey(ref msg, keyData);
@@ -150,6 +242,9 @@ namespace ZBC_OOP_Battleship.Forms
 
             overHeadLabel.Visible = true;
             overHeadLabel.Text = "Player 1: Set up your board.";
+            label_Instruction.Visible = true;
+            label_Instruction.Text = "Press ENTER to go to Player 2 setup.";
+            localGameState = GameState.PlayerOneSettingUp;
         }
 
         private void PlayerCellClicked(Point cell)
@@ -262,39 +357,68 @@ namespace ZBC_OOP_Battleship.Forms
 
         }
 
+       
+
+        private void TurnEnd()
+        {
+            label_Instruction.Text = "Press ENTER to end turn.";
+        }
+
+
+        private void ShowInterplayScreen()
+        {
+            PlayerOneBoard.Hide();
+            PlayerOneEnemyBoard.Hide();
+
+            PlayerTwoBoard.Hide();
+            PlayerTwoEnemyBoard.Hide();
+
+            label_Interstitial.Visible = true;
+            label_Interstitial.Text = "Press ENTER to start PLAYER 2 turn.";
+        }
+
         private void InitiateGame()
         {
+            localGameState =  _control.StartMatch(playerOneShips, playerTwoShips);
+
             label_Interstitial.Visible = false;
-            btn_SetupNext.Visible = false;
+
+            // Position the boards
             PlayerOneBoard.CenterVerticalLocation(this.Height, 100);
-            PlayerOneBoard.Show();
-
-            PlayerOneBoard.UpdateShips(_control.GetPlayerOneShips());
-
             PlayerOneEnemyBoard.CenterVerticalLocation(this.Height, 700);
-            PlayerOneEnemyBoard.Show();
+            PlayerTwoBoard.CenterVerticalLocation(this.Height, 100);
+            PlayerTwoEnemyBoard.CenterVerticalLocation(this.Height, 700);
+            PlayerOneBoard.Hide();
+            PlayerOneEnemyBoard.Hide();
+            PlayerTwoBoard.Hide();
+            PlayerTwoEnemyBoard.Hide();
+
+            // Show and update the proper one
+            if (localGameState == GameState.PlayerOneTurn)
+            {
+                //PlayerOneBoard.UpdatePlayerShips(_control.GetPlayerOneShips());
+                PlayerOneBoard.UpdateBoard(_control.GetPlayerOneShips());
+                PlayerOneBoard.Show();
+                PlayerOneEnemyBoard.IsActive = true;
+
+                PlayerOneEnemyBoard.Show();
+            }
+            else
+            {
+                PlayerTwoBoard.UpdateBoard(_control.GetPlayerTwoShips());
+                PlayerTwoBoard.Show();
+                PlayerTwoEnemyBoard.IsActive = true;
+                PlayerTwoEnemyBoard.Show();
+            }
+
+
+            localGameState = GameState.PlayerOneTurn;
 
         }
 
         private void btn_SetupNextClick(object sender, EventArgs e)
         {
-            switch (gameState)
-            {
-                case GameState.PlayerOneSettingUp:
-                    PlayerOneBoard.Hide();
-                    PlayerTwoBoard.Show();
-                    overHeadLabel.Text = "Player 2: Set up your board";
-                    gameState = GameState.PlayerTwoSettingUp;
-                    break;
-
-                case GameState.PlayerTwoSettingUp:
-                    gameState = GameState.WaitingToStart;
-                    PlayerOneBoard.Hide();
-                    PlayerTwoBoard.Hide();
-                    label_Interstitial.Visible = true;
-                    label_Interstitial.Text = "Player 1: Press ENTER to start (Player 2 look away!)";
-                    break;
-            }
+            
         }
 
     }
