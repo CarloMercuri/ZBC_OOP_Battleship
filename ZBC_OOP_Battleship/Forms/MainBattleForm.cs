@@ -99,24 +99,23 @@ namespace ZBC_OOP_Battleship.Forms
             //PlayerOneBoard.Hide();
 
             PlayerOneBoard = new PlayerBoard();
-            PlayerOneBoard.CreatePanel(this, true, 80, 50);
-            PlayerOneBoard.AddClickEvent(PlayerCellClicked);
+            PlayerOneBoard.CreatePanel(this, true, PlayerInputSource.PlayerOne, 80, 50);
             PlayerOneBoard.AddMouseMoveEvent(PlayerBoardMouseMove);
             PlayerOneBoard.Hide();
 
             PlayerOneEnemyBoard = new EnemyBoard();
-            PlayerOneEnemyBoard.CreatePanel(this, false);
+            PlayerOneEnemyBoard.CreatePanel(this, false, PlayerInputSource.PlayerOne);
             PlayerOneEnemyBoard.Hide();
-            PlayerOneEnemyBoard.AddClickEvent(EnemyCellClicked);
+            PlayerOneEnemyBoard.AddClickEvent(EnemyCellClicked, PlayerInputSource.PlayerOne);
 
             PlayerTwoBoard = new PlayerBoard();
-            PlayerTwoBoard.CreatePanel(this, true, 700, 50);
+            PlayerTwoBoard.CreatePanel(this, true, PlayerInputSource.PlayerTwo, 700, 50);
             PlayerTwoBoard.Hide();
 
             PlayerTwoEnemyBoard = new EnemyBoard();
-            PlayerTwoEnemyBoard.CreatePanel(this, false);
+            PlayerTwoEnemyBoard.CreatePanel(this, false, PlayerInputSource.PlayerTwo);
             PlayerTwoEnemyBoard.Hide();
-            PlayerOneEnemyBoard.AddClickEvent(EnemyCellClicked);
+            PlayerTwoEnemyBoard.AddClickEvent(EnemyCellClicked, PlayerInputSource.PlayerTwo);
 
             localGameState = GameState.PlayerOneSettingUp;
 
@@ -142,15 +141,30 @@ namespace ZBC_OOP_Battleship.Forms
 
         }
 
-        private void EnemyCellClicked(Point cell)
+        private void EnemyCellClicked(Point cell, PlayerInputSource source)
         {
-            bool hit = _control.HitResult(cell);
-            PlayerOneEnemyBoard.UpdateHitResult(cell, hit);
-            PlayerTwoEnemyBoard.UpdateHitResult(cell, hit);
+            HitResult hitResult = _control.RegisterHitInput(cell, source);
+
+            if(hitResult == HitResult.Invalid)
+            {
+                return;
+            }
+
+            if(source == PlayerInputSource.PlayerOne)
+            {
+                PlayerOneEnemyBoard.UpdateHitResult(cell, hitResult);
+            }
+            else
+            {
+                PlayerTwoEnemyBoard.UpdateHitResult(cell, hitResult);
+            }
+
+
         }
 
         private void StateChangeEvent(object sender, StateChangeEventArgs args)
         {
+            Console.WriteLine($"State change to: {args.GameState}");
             // Change it regardless
             mainGameState = args.GameState;
 
@@ -172,6 +186,7 @@ namespace ZBC_OOP_Battleship.Forms
         {
             if (keyData == Keys.Enter)
             {
+                Console.WriteLine($"Enter pressed. Gamestate: {localGameState}");
                 switch (localGameState)
                 {
                     case GameState.WaitingToStart:
@@ -195,30 +210,52 @@ namespace ZBC_OOP_Battleship.Forms
                         label_Interstitial.Text = "Player 1: Press ENTER to start (Player 2 look away!)";
                         break;
 
+                    case GameState.WaitingToEndTurn:
+
+                        label_Interstitial.Visible = true;
+                        if(mainGameState == GameState.PlayerOneTurn)
+                        {
+                            label_Interstitial.Text = "Player ONE, Press ENTER to start your turn!";
+                        }
+                        else if (mainGameState == GameState.PlayerTwoTurn)
+                        {
+                            label_Interstitial.Text = "Player TWO, Press ENTER to start your turn!";
+                        }
+
+                        localGameState = GameState.WaitingToChangeTurn;
+                        break;
+
                     case GameState.WaitingToChangeTurn:
 
-                        if(mainGameState == GameState.PlayerOneTurn)
+                        label_Interstitial.Visible = false;
+
+                        if (mainGameState == GameState.PlayerOneTurn)
                         {
                             PlayerOneEnemyBoard.IsActive = true;
                             PlayerTwoEnemyBoard.IsActive = false;
                             PlayerTwoBoard.Hide();
                             PlayerTwoEnemyBoard.Hide();
                             PlayerOneBoard.Show();
+                            PlayerOneBoard.UpdateBoard(_control.GetPlayerOneShips());
                             PlayerOneEnemyBoard.Show();
                             localGameState = GameState.PlayerOneTurn;
                         }
-                        else if(mainGameState == GameState.PlayerTwoTurn)
+                        else if (mainGameState == GameState.PlayerTwoTurn)
                         {
                             PlayerTwoEnemyBoard.IsActive = true;
                             PlayerOneEnemyBoard.IsActive = false;
                             PlayerOneBoard.Hide();
                             PlayerOneEnemyBoard.Hide();
                             PlayerTwoBoard.Show();
+                            PlayerOneBoard.UpdateBoard(_control.GetPlayerTwoShips());
                             PlayerTwoEnemyBoard.Show();
                             localGameState = GameState.PlayerTwoTurn;
                         }
-
                         break;
+
+                    
+
+
 
                     default:
                         break;
@@ -361,7 +398,7 @@ namespace ZBC_OOP_Battleship.Forms
 
         private void TurnEnd()
         {
-            label_Instruction.Text = "Press ENTER to end turn.";
+            overHeadLabel.Text = "Press ENTER to end turn.";
         }
 
 

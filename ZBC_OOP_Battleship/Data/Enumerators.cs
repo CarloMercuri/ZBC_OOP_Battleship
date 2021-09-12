@@ -12,6 +12,19 @@ namespace ZBC_OOP_Battleship
         East
     }
 
+    public enum HitResult
+    {
+        Successful,
+        Unsuccessful,
+        Invalid
+    }
+
+    public enum PlayerInputSource
+    {
+        PlayerOne,
+        PlayerTwo
+    }
+
     public enum MovementDirection
     {
         Left,

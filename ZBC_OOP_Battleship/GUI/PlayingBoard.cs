@@ -13,6 +13,14 @@ namespace ZBC_OOP_Battleship
         private Panel mainPanel { get; set; }
         private Panel battlePanel;
 
+        private PlayerInputSource playerSource;
+
+        public PlayerInputSource PlayerSource
+        {
+            get { return playerSource; }
+            private set { playerSource = value; }
+        }
+
         private bool isActive;
 
         public bool IsActive
@@ -41,10 +49,10 @@ namespace ZBC_OOP_Battleship
 
         }
 
-        public virtual void CreatePanel(Control parentControl, bool playerBoard, int locX = 0, int locY = 0)
+        public virtual void CreatePanel(Control parentControl, bool playerBoard, PlayerInputSource source, int locX = 0, int locY = 0)
         {
             activeShips = new List<ShipDisplay>();
-
+            playerSource = source;
 
             // The header panel
             mainPanel = new Panel();
@@ -108,7 +116,7 @@ namespace ZBC_OOP_Battleship
             mainPanel.Location = new Point(x, formHeight / 2 - mainPanel.Height / 2);
         }
 
-        public void AddClickEvent(Action<Point> method)
+        public void AddClickEvent(Action<Point, PlayerInputSource> method, PlayerInputSource source)
         {
             // TO-DO: Find out the better way
             battlePanel.Click += (sender, args) =>
@@ -118,7 +126,7 @@ namespace ZBC_OOP_Battleship
                 int cellY = margs.Y / Constants.CellSize;
 
                 Point cell = new Point(cellX, cellY);
-                method(cell);
+                method(cell, source);
             };
         }
 

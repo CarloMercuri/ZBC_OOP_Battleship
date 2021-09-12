@@ -57,13 +57,23 @@ namespace ZBC_OOP_Battleship
             return playerTwoBoard.Battleships;
         }
 
-        public bool HitResult(Point cell)
+        public HitResult RegisterHitInput(Point cell, PlayerInputSource source)
         {
-            bool result = false;
 
+            // avoid multiple inputs in the same turn
             if (turnHasPlayed)
             {
-                return false;
+                return HitResult.Unsuccessful;
+            }
+
+            if(gameState == GameState.PlayerOneTurn && source == PlayerInputSource.PlayerTwo)
+            {
+                return HitResult.Unsuccessful;
+            }
+
+            if (gameState == GameState.PlayerTwoTurn && source == PlayerInputSource.PlayerOne)
+            {
+                return HitResult.Unsuccessful;
             }
 
             BattleBoard board;
@@ -87,12 +97,16 @@ namespace ZBC_OOP_Battleship
                     EndMatch();
                 }
 
-                result = true;
+                ChangeTurn();
+                return HitResult.Successful;
+            }
+            else
+            {
+                ChangeTurn();
+                return HitResult.Unsuccessful;
             }
 
-            ChangeTurn();
 
-            return result;
 
         }
 

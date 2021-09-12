@@ -17,7 +17,7 @@ namespace ZBC_OOP_Battleship
         private Pen crossPen;
         private int circleRadius = 15;
 
-        public override void CreatePanel(Control parentControl, bool playerBoard, int locX = 0, int locY = 0)
+        public override void CreatePanel(Control parentControl, bool playerBoard, PlayerInputSource source, int locX = 0, int locY = 0)
         {
             crossPen = new Pen(Color.Red, 2);
             circlePen = new Pen(Color.Blue, 3);
@@ -32,12 +32,12 @@ namespace ZBC_OOP_Battleship
                 }
             }
 
-            base.CreatePanel(parentControl, playerBoard, locX, locY);
+            base.CreatePanel(parentControl, playerBoard, source, locX, locY);
         }
 
-        public void UpdateHitResult(Point cell, bool isHit)
+        public void UpdateHitResult(Point cell, HitResult isHit)
         {
-            if (isHit)
+            if (isHit == HitResult.Successful)
             {
                 boardSlots[cell.X, cell.Y] = EnemyBoardSlotStatus.SuccessfulHit;
             }
