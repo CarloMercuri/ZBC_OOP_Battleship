@@ -10,11 +10,15 @@ namespace ZBC_OOP_Battleship
     {
         private PlayerIdentifier winningPlayer;
 
+        /// <summary>
+        /// The player that won the game
+        /// </summary>
         public PlayerIdentifier WinningPlayer
         {
             get { return winningPlayer; }
             set { winningPlayer = value; }
         }
 
+ 
     }
 }

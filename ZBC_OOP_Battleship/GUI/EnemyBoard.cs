@@ -13,6 +13,8 @@ namespace ZBC_OOP_Battleship
        
         private EnemyBoardSlotStatus[,] boardSlots;
 
+        private PlayerIdentifier playerOwner;
+
         private Pen circlePen;
         private Pen crossPen;
         private int circleRadius = 15;
@@ -22,7 +24,7 @@ namespace ZBC_OOP_Battleship
         {
             crossPen = new Pen(Color.Red, 2);
             circlePen = new Pen(Color.Blue, 3);
-
+            playerOwner = source;
             boardSlots = new EnemyBoardSlotStatus[10, 10];
 
             for (int x = 0; x < 10; x++)
@@ -34,6 +36,18 @@ namespace ZBC_OOP_Battleship
             }
 
             base.CreatePanel(parentControl, playerBoard, source, locX, locY);
+        }
+
+        public bool IsSlotValidTarget(Point cell)
+        {
+            if(boardSlots[cell.X, cell.Y] == EnemyBoardSlotStatus.NotTried)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void UpdateHitResult(Point cell, HitResult isHit)
@@ -57,6 +71,7 @@ namespace ZBC_OOP_Battleship
 
         public override void BattlePanelPaint(object sender, PaintEventArgs e)
         {
+            Console.WriteLine($"{playerOwner} Enemy board BattlePanel update");
             base.BattlePanelPaint(sender, e);
 
             for (int x = 0; x < 10; x++)

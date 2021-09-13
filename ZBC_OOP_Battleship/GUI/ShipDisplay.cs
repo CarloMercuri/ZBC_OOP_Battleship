@@ -92,12 +92,6 @@ namespace ZBC_OOP_Battleship
             {
                 if (section.IsHit)
                 {
-                    //e.Graphics.DrawLine(crossPen,
-                    //                    Constants.CellSize * section.SectionNumber + 6,
-                    //                    6,
-                    //                    Constants.CellSize * section.SectionNumber + Constants.CellSize - 6,
-                    //                    Constants.CellSize - 6);
-
                     if (ShipData.Direction == ShipDirection.East)
                     {
                         e.Graphics.DrawLine(crossPen,
@@ -114,38 +108,23 @@ namespace ZBC_OOP_Battleship
                     } 
                     else
                     {
-                        //e.Graphics.DrawLine(crossPen,
-                        //                    6,                                                  // x1
-                        //                    Constants.CellSize * section.SectionNumber + 6,     // y1
-                        //                    Constants.CellSize - 6,                             // x2
-                        //                    Constants.CellSize * section.SectionNumber  + Constants.CellSize - 6);    // y2
-
                         e.Graphics.DrawLine(crossPen,
                                            6,                                                  // x1
-                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber + 6,     // y1
+                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - 34,     // y1
                                            Constants.CellSize - 6,                             // x2
-                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber + Constants.CellSize - 6);    // y2
+                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - 6 );    // y2 
+
 
                         e.Graphics.DrawLine(crossPen,
                                            Constants.CellSize - 6,
-                                           Constants.CellSize * section.SectionNumber + 6,
+                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - 34,
                                            6,
-                                           Constants.CellSize * section.SectionNumber + Constants.CellSize - 6);
+                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - 6);
                     }
 
                   
                 }
             }
-
-            //for (int x = 0; x < panel.Width / 40; x++)
-            //{
-            //    for (int y = 0; y < panel.Height / 40; y++)
-            //    {
-            //        e.Graphics.DrawRectangle(borderPen, new Rectangle(Constants.CellSize * x, Constants.CellSize * y, Constants.CellSize, Constants.CellSize));
-            //    }
-            //}
-
-
         }
 
     }

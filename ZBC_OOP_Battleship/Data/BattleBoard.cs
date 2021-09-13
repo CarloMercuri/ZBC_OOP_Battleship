@@ -10,17 +10,19 @@ namespace ZBC_OOP_Battleship
 {
     public class BattleBoard
     {
-
+        /// <summary>
+        /// The main data grid
+        /// </summary>
         private GridSlot[,] mainGrid;
 
-        public GridSlot[,] MainGrid
-        {
-            get { return mainGrid; }
-            set { mainGrid = value; }
-        }
-
+        /// <summary>
+        /// The list of battleships on this board
+        /// </summary>
         private List<Battleship> battleships;
 
+        /// <summary>
+        /// The list of battleships on this board
+        /// </summary>
         public List<Battleship> Battleships
         {
             get { return battleships; }
@@ -42,6 +44,7 @@ namespace ZBC_OOP_Battleship
 
             battleships = ships;
 
+            // Go through the ships assigned to this board and mark the slots where a ship section exists
             foreach (Battleship ship in ships)
             {
                 foreach (ShipSection section in ship.Sections)
@@ -52,6 +55,11 @@ namespace ZBC_OOP_Battleship
             }
         }
 
+        /// <summary>
+        /// Returns true if the cell contains a ship section
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
         public bool IsShipHit(Point cell)
         {
             if (CellContainsShip(cell))
@@ -63,6 +71,10 @@ namespace ZBC_OOP_Battleship
             return false;
         }
 
+        /// <summary>
+        /// Updates the ship's data
+        /// </summary>
+        /// <param name="cell"></param>
         private void RegisterHit(Point cell)
         {
             foreach (Battleship ship in battleships)
@@ -74,11 +86,22 @@ namespace ZBC_OOP_Battleship
             }
         }
 
+        /// <summary>
+        /// Returns a GridSlot object
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public GridSlot GetGridSlot(int x, int y)
         {
             return mainGrid[x, y];
         }
 
+        /// <summary>
+        /// True if a cell contains a ship
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
         public bool CellContainsShip(Point cell)
         {
            if(mainGrid[cell.X, cell.Y].ShipID != -1)
@@ -89,6 +112,12 @@ namespace ZBC_OOP_Battleship
             return false;
         }
 
+        /// <summary>
+        /// True if the cell contains a ship that is NOT equal to the provided ship
+        /// </summary>
+        /// <param name="ship"></param>
+        /// <param name="cell"></param>
+        /// <returns></returns>
         public bool CellContainsDifferentShip(Battleship ship, Point cell)
         {
             foreach (Battleship s in battleships)

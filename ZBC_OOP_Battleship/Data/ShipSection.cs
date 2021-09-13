@@ -11,6 +11,9 @@ namespace ZBC_OOP_Battleship
     {
         private Point sectionCell;
 
+        /// <summary>
+        /// The X-Y coordinates (NOT local) of the section in the main grid
+        /// </summary>
         public Point SectionCell
         {
             get { return sectionCell; }
@@ -19,6 +22,9 @@ namespace ZBC_OOP_Battleship
 
         private int sectionNumber;
 
+        /// <summary>
+        /// The number of the section
+        /// </summary>
         public int SectionNumber
         {
             get { return sectionNumber; }
@@ -28,6 +34,9 @@ namespace ZBC_OOP_Battleship
 
         private bool isHit;
 
+        /// <summary>
+        /// True if the ship has been hit by the opposing player
+        /// </summary>
         public bool IsHit
         {
             get { return isHit; }

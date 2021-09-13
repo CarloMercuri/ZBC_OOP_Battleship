@@ -124,13 +124,22 @@ namespace ZBC_OOP_Battleship
 
         private void EndMatch()
         {
+            MatchEndEventArgs args = new MatchEndEventArgs();
 
+            if (gameState == GameState.PlayerOneTurn)
+            {
+                args.WinningPlayer = PlayerIdentifier.PlayerOne;
+            }
+            else if (gameState == GameState.PlayerTwoTurn)
+            {
+                args.WinningPlayer = PlayerIdentifier.PlayerTwo;
+            }
+
+            MatchEnd?.Invoke(this, args);            
         }
 
         private bool ShouldMatchEnd(BattleBoard board)
         {
-            bool matchShouldEnd = true;
-
             foreach (Battleship ship in board.Battleships)
             {
                 if (!ship.IsDestroyed)

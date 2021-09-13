@@ -14,6 +14,9 @@ namespace ZBC_OOP_Battleship
 
         private int publicID;
 
+        /// <summary>
+        /// The unique ID of this ship
+        /// </summary>
         public int ID
         {
             get { return publicID; }
@@ -22,6 +25,9 @@ namespace ZBC_OOP_Battleship
 
         private bool isDestroyed;
 
+        /// <summary>
+        /// True if all the sections have been hit
+        /// </summary>
         public bool IsDestroyed
         {
             get { return isDestroyed; }
@@ -31,6 +37,9 @@ namespace ZBC_OOP_Battleship
 
         private List<ShipSection> sections;
 
+        /// <summary>
+        /// The sections this ship is divided into
+        /// </summary>
         public List<ShipSection> Sections
         {
             get { return sections; }
@@ -39,6 +48,9 @@ namespace ZBC_OOP_Battleship
 
         private ShipDirection direction;
 
+        /// <summary>
+        /// The direction the ship is facing
+        /// </summary>
         public ShipDirection Direction
         {
             get { return direction; }
@@ -47,6 +59,9 @@ namespace ZBC_OOP_Battleship
 
         private int lenght;
 
+        /// <summary>
+        /// The lenght in grid cells of this ship
+        /// </summary>
         public int Lenght
         {
             get { return lenght; }
@@ -55,19 +70,13 @@ namespace ZBC_OOP_Battleship
 
         private Point startCell;
 
+        /// <summary>
+        /// The origin cell of this ship
+        /// </summary>
         public Point StartCell
         {
             get { return startCell; }
             set { startCell = value; }
-        }
-
-
-        private Panel mainPanel;
-
-        public Panel MainPanel
-        {
-            get { return mainPanel; }
-            set { mainPanel = value; }
         }
 
         public Battleship(Point startCell, int lenght, ShipDirection direction = ShipDirection.East)
@@ -75,11 +84,15 @@ namespace ZBC_OOP_Battleship
             this.startCell = startCell;
             this.lenght = lenght;
             this.direction = direction;
+
+            // Assign a unique ID 
             id++;
             publicID = id;
 
+            // Create the ship sections
             sections = new List<ShipSection>();
 
+            // Left to right
             if(direction == ShipDirection.East)
             {
                 for (int i = 0; i < lenght; i++)
@@ -89,21 +102,26 @@ namespace ZBC_OOP_Battleship
             } 
             else
             {
+                // Down to up
                 for (int i = 0; i < lenght; i++)
                 {
                     sections.Add(new ShipSection(new Point(StartCell.X, StartCell.Y - i), i));
                 }
             }
 
+            // Make sure all the sections of a new ship are marked as not hit
             for (int i = 0; i < sections.Count; i++)
             {
                 sections[i].IsHit = false;
             }
         }
 
+        /// <summary>
+        /// Accepts a hit and changes data
+        /// </summary>
+        /// <param name="gridCell"></param>
         public void RegisterHit(Point gridCell)
         {
-            Console.WriteLine($"Hit at {gridCell}");
             // Set the hit
             for (int i = 0; i < sections.Count; i++)
             {

@@ -10,6 +10,9 @@ namespace ZBC_OOP_Battleship
     {
         private GameState gameState;
 
+        /// <summary>
+        /// The new game state
+        /// </summary>
         public GameState GameState
         {
             get { return gameState; }

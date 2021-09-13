@@ -147,6 +147,7 @@ namespace ZBC_OOP_Battleship
         {
             battlePanel.MouseMove += (sender, args) =>
             {
+
                 MouseEventArgs margs = (MouseEventArgs)args;
                 Point cell = GetCellFromCoords(margs.X, margs.Y);
                 method(cell);

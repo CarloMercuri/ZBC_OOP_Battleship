@@ -82,26 +82,12 @@ namespace ZBC_OOP_Battleship.Forms
             this.Controls.Add(label_Instruction);
             label_Instruction.Visible = false;
 
-            // btn_setupNext
-            //btn_SetupNext = new Button();
-            //btn_SetupNext.Size = new Size(100, 60);
-            //btn_SetupNext.Font = new Font(FontFamily.GenericSansSerif, 14, FontStyle.Bold);
-            //btn_SetupNext.Text = "Done";
-            //btn_SetupNext.Location = new Point(1000, 300);
-            //btn_SetupNext.Click += btn_SetupNextClick;
-            //this.Controls.Add(btn_SetupNext);
-
-
-            // Boards initialization
-            //PlayerOneBoard = new BoardDisplay();
-            //PlayerOneBoard.CreatePanel(this, true, 80, 50);
-            //PlayerOneBoard.AddClickEvent(PlayerCellClicked);
-            //PlayerOneBoard.AddMouseMoveEvent(PlayerBoardMouseMove);
-            //PlayerOneBoard.Hide();
+            //
+            // Playing boards
+            //
 
             PlayerOneBoard = new PlayerBoard();
             PlayerOneBoard.CreatePanel(this, true, PlayerIdentifier.PlayerOne, 80, 50);
-            PlayerOneBoard.AddMouseMoveEvent(PlayerBoardMouseMove);
             PlayerOneBoard.Hide();
 
             PlayerOneEnemyBoard = new EnemyBoard();
@@ -130,12 +116,11 @@ namespace ZBC_OOP_Battleship.Forms
             playerOneShips = new List<Battleship>();
             playerOneShips.Add(new Battleship(new Point(2, 4), 5, ShipDirection.East));
             playerOneShips.Add(new Battleship(new Point(1, 5), 2, ShipDirection.North));
-            playerOneShips.Add(new Battleship(new Point(8, 7), 4, ShipDirection.North));
+            playerOneShips.Add(new Battleship(new Point(5, 9), 4, ShipDirection.North));
 
             playerTwoShips = new List<Battleship>();
-            playerTwoShips.Add(new Battleship(new Point(2, 4), 5, ShipDirection.East));
-            playerTwoShips.Add(new Battleship(new Point(1, 5), 2, ShipDirection.North));
-            playerTwoShips.Add(new Battleship(new Point(8, 7), 4, ShipDirection.North));
+            playerTwoShips.Add(new Battleship(new Point(3, 2), 2, ShipDirection.East));
+
 
 
             _control.StateChange += StateChangeEvent;
@@ -149,15 +134,15 @@ namespace ZBC_OOP_Battleship.Forms
         {
             localGameState = GameState.GameEnd;
 
-            label_Instruction.ForeColor = Color.Red;
+            overHeadLabel.ForeColor = Color.Red;
 
             if(e.WinningPlayer == PlayerIdentifier.PlayerOne)
             {
-                label_Instruction.Text = "Player ONE wins! Congratulations!";
+                overHeadLabel.Text = "Player ONE wins! Congratulations!";
             }
             else
             {
-                label_Instruction.Text = "Player TWO wins! Congratulations!";
+                overHeadLabel.Text = "Player TWO wins! Congratulations!";
             }
 
         }
@@ -165,6 +150,21 @@ namespace ZBC_OOP_Battleship.Forms
         private void EnemyCellClicked(Point cell, PlayerIdentifier source)
         {
             if (turnPlayed)
+            {
+                return;
+            }
+
+            if(localGameState == GameState.GameEnd)
+            {
+                return;
+            }
+
+            if(source == PlayerIdentifier.PlayerOne && !PlayerOneEnemyBoard.IsSlotValidTarget(cell))
+            {
+                return;
+            }
+
+            if(source == PlayerIdentifier.PlayerTwo && !PlayerTwoEnemyBoard.IsSlotValidTarget(cell))
             {
                 return;
             }
@@ -206,6 +206,10 @@ namespace ZBC_OOP_Battleship.Forms
                     localGameState = GameState.WaitingToEndTurn;
                     TurnEnd();
                     break;
+
+                case GameState.GameEnd:
+                    break;
+
             }
         }
 
@@ -213,7 +217,6 @@ namespace ZBC_OOP_Battleship.Forms
         {
             if (keyData == Keys.Enter)
             {
-                Console.WriteLine($"Enter pressed. Local Game state: {localGameState}");
                 switch (localGameState)
                 {
                     case GameState.GameEnd:
@@ -262,6 +265,7 @@ namespace ZBC_OOP_Battleship.Forms
 
                         if (mainGameState == GameState.PlayerOneTurn)
                         {
+                            overHeadLabel.Text = "Player ONE: Make your move.";
                             PlayerOneEnemyBoard.IsActive = true;
                             PlayerTwoBoard.Hide();
                             PlayerTwoEnemyBoard.Hide();
@@ -269,6 +273,7 @@ namespace ZBC_OOP_Battleship.Forms
                             PlayerOneBoard.UpdateBoard(_control.GetPlayerOneShips());
                             PlayerOneEnemyBoard.Show();
                             localGameState = GameState.PlayerOneTurn;
+
                         }
                         else if (mainGameState == GameState.PlayerTwoTurn)
                         {
@@ -279,20 +284,15 @@ namespace ZBC_OOP_Battleship.Forms
                             PlayerTwoBoard.UpdateBoard(_control.GetPlayerTwoShips());
                             PlayerTwoEnemyBoard.Show();
                             localGameState = GameState.PlayerTwoTurn;
+                            overHeadLabel.Text = "Player TWO: Make your move.";
                         }
                         break;
-
-                    
-
-
-
+                        
                     default:
                         break;
                 }
 
             }
-
-            label1.Text = localGameState.ToString();
 
             // Call the base class
             return base.ProcessCmdKey(ref msg, keyData);
@@ -311,16 +311,6 @@ namespace ZBC_OOP_Battleship.Forms
             label_Instruction.Visible = true;
             label_Instruction.Text = "Press ENTER to go to Player 2 setup.";
             localGameState = GameState.PlayerOneSettingUp;
-        }
-
-        private void PlayerCellClicked(Point cell)
-        {
-            Console.WriteLine(cell);
-        }
-
-        private void PlayerBoardMouseMove(Point cell)
-        {
-            Console.WriteLine(cell);
         }
 
         private Point GetCellFromCoords(int x, int y)
@@ -462,7 +452,6 @@ namespace ZBC_OOP_Battleship.Forms
             // Show and update the proper one
             if (localGameState == GameState.PlayerOneTurn)
             {
-                //PlayerOneBoard.UpdatePlayerShips(_control.GetPlayerOneShips());
                 PlayerOneBoard.UpdateBoard(_control.GetPlayerOneShips());
                 PlayerOneBoard.Show();
                 PlayerOneEnemyBoard.IsActive = true;
@@ -479,6 +468,7 @@ namespace ZBC_OOP_Battleship.Forms
 
 
             localGameState = GameState.PlayerOneTurn;
+            label_Instruction.Text = "Player ONE: Make your move.";
 
         }
 
