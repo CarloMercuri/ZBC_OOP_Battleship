@@ -10,9 +10,11 @@ namespace ZBC_OOP_Battleship
 {
     public class PlayingBoard
     {
+        // GUI
         private Panel mainPanel { get; set; }
         private Panel battlePanel;
 
+        // The source of an input
         private PlayerIdentifier playerSource;
 
         public PlayerIdentifier PlayerSource
@@ -23,6 +25,9 @@ namespace ZBC_OOP_Battleship
 
         private bool isActive;
 
+        /// <summary>
+        /// If the board is actively updating
+        /// </summary>
         public bool IsActive
         {
             get { return isActive; }
@@ -36,9 +41,6 @@ namespace ZBC_OOP_Battleship
             set { battlePanel = value; }
         }
 
-
-        public List<ShipDisplay> activeShips { get; set; }
-
         public virtual void UpdateBoard()
         {
 
@@ -49,9 +51,16 @@ namespace ZBC_OOP_Battleship
 
         }
 
+        /// <summary>
+        /// Creates the visual aspect of the board
+        /// </summary>
+        /// <param name="parentControl"></param>
+        /// <param name="playerBoard"></param>
+        /// <param name="source"></param>
+        /// <param name="locX"></param>
+        /// <param name="locY"></param>
         public virtual void CreatePanel(Control parentControl, bool playerBoard, PlayerIdentifier source, int locX = 0, int locY = 0)
         {
-            activeShips = new List<ShipDisplay>();
             playerSource = source;
 
             // The header panel
@@ -72,8 +81,6 @@ namespace ZBC_OOP_Battleship
             battlePanel.BorderStyle = BorderStyle.FixedSingle;
 
             battlePanel.Paint += BattlePanelPaint;
-            battlePanel.MouseEnter += BattlePanelMouseEnter;
-            BattlePanel.MouseLeave += BattlePanelMouseLeave;
 
             mainPanel.Controls.Add(battlePanel);
 
@@ -81,41 +88,58 @@ namespace ZBC_OOP_Battleship
 
         }
 
-        private void BattlePanelMouseLeave(object sender, EventArgs e)
-        {
-            Cursor.Current = Cursors.Default;
-        }
-
-        private void BattlePanelMouseEnter(object sender, EventArgs e)
-        {
-            Cursor.Current = Cursors.Hand;
-        }
-
+        /// <summary>
+        /// Returns the coordinates of the top left corner of a cell
+        /// </summary>
+        /// <param name="cellX"></param>
+        /// <param name="cellY"></param>
+        /// <returns></returns>
         public Point GetTopLeftCellCoords(int cellX, int cellY)
         {
             return new Point(Constants.CellSize * cellX, Constants.CellSize * cellY);
         }
 
+        /// <summary>
+        /// Hides the board
+        /// </summary>
         public void Hide()
         {
             mainPanel.Visible = false;
         }
 
+        /// <summary>
+        /// Displays the board
+        /// </summary>
         public void Show()
         {
             mainPanel.Visible = true;
         }
                
+        /// <summary>
+        /// Places the board at a specified Y level, keeping the X centered in the form
+        /// </summary>
+        /// <param name="formWidth"></param>
+        /// <param name="y"></param>
         public void CenterHorizontalLocation(int formWidth, int y)
         {
             mainPanel.Location = new Point(formWidth / 2 - mainPanel.Width / 2, y);
         }
 
+        /// <summary>
+        /// Places the board at a specified X leve, keeping the Y centered in the form
+        /// </summary>
+        /// <param name="formHeight"></param>
+        /// <param name="x"></param>
         public void CenterVerticalLocation(int formHeight, int x)
         {
             mainPanel.Location = new Point(x, formHeight / 2 - mainPanel.Height / 2);
         }
 
+        /// <summary>
+        /// Registers an event for a mouse click
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="source"></param>
         public void AddClickEvent(Action<Point, PlayerIdentifier> method, PlayerIdentifier source)
         {
             // TO-DO: Find out the better way
@@ -130,6 +154,12 @@ namespace ZBC_OOP_Battleship
             };
         }
 
+        /// <summary>
+        /// Returns the cell coordinates from the mouse coordinates
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private Point GetCellFromCoords(int x, int y)
         {
             int cellX = x / Constants.CellSize;
@@ -138,11 +168,20 @@ namespace ZBC_OOP_Battleship
             return new Point(cellX, cellY);
         }
 
+        /// <summary>
+        /// Sets the location of this board
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void SetLocation(int x, int y)
         {
             mainPanel.Location = new Point(x, y);
         }
 
+        /// <summary>
+        /// Registers a mouse move event
+        /// </summary>
+        /// <param name="method"></param>
         public void AddMouseMoveEvent(Action<Point> method)
         {
             battlePanel.MouseMove += (sender, args) =>
@@ -154,7 +193,11 @@ namespace ZBC_OOP_Battleship
             };
         }
 
-
+        /// <summary>
+        /// Paint method for the header panel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HeaderPanelPaint(object sender, PaintEventArgs e)
         {
             Panel p = sender as Panel;
@@ -168,6 +211,7 @@ namespace ZBC_OOP_Battleship
             SolidBrush textBrush = new SolidBrush(Color.FromArgb(190, 100, 100, 100));
             Font textFont = new Font(FontFamily.GenericSansSerif, 18);
 
+            // Draw the letters
             for (int letters = 0; letters < 10; letters++)
             {
                 e.Graphics.DrawString(((char)(65 + letters)).ToString(), textFont, textBrush, 48 + Constants.CellSize * letters, 6);
@@ -175,6 +219,7 @@ namespace ZBC_OOP_Battleship
 
             int numbersX = 10;
 
+            // Draw the numbers
             for (int numbers = 1; numbers < 11; numbers++)
             {
                 if (numbers >= 10) numbersX = 2;
@@ -182,6 +227,11 @@ namespace ZBC_OOP_Battleship
             }
         }
 
+        /// <summary>
+        /// Paint event for the checkered panel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public virtual void BattlePanelPaint(object sender, PaintEventArgs e)
         {
             int xPos = 0;

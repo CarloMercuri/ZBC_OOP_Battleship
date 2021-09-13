@@ -10,21 +10,17 @@ namespace ZBC_OOP_Battleship
 {
     public class ShipDisplay
     {
+        // The ship data
         private Battleship shipData;
 
-        public Battleship ShipData
-        {
-            get { return shipData; }
-            set { shipData = value; }
-        }
-
         private Panel mainPanel;
-
         private Control parentControl;
 
+        // Paint event
         private Pen shipBorderPen;
         private Pen crossPen;
         private int borderSize = 3;
+        private int crossMargin = 6;
 
 
         public ShipDisplay(Battleship ship, Control parentControl)
@@ -40,11 +36,20 @@ namespace ZBC_OOP_Battleship
             CreateShipPanel();
         }
 
+        /// <summary>
+        /// Sets the location of this ship
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void SetLocation(int x, int y)
         {
             mainPanel.Location = new Point(x, y);
         }
 
+        /// <summary>
+        /// Sets the location of this ship
+        /// </summary>
+        /// <param name="point"></param>
         public void SetLocation(Point point)
         {
             mainPanel.Location = point;
@@ -55,10 +60,15 @@ namespace ZBC_OOP_Battleship
             mainPanel.Invalidate();
         }
 
+        /// <summary>
+        /// Creates the main panel
+        /// </summary>
+        /// <returns></returns>
         private Panel CreateShipPanel()
         {
             mainPanel = new Panel();
 
+            // Make it horizontal or vertical depending on how it's created
             if (shipData.Direction == ShipDirection.East)
             {
                 mainPanel.Width = Constants.CellSize * shipData.Lenght;
@@ -76,6 +86,11 @@ namespace ZBC_OOP_Battleship
             return mainPanel;
         }
 
+        /// <summary>
+        /// Main paint event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ShipPanelPaint(object sender, PaintEventArgs e)
         {
             // Draw background color
@@ -88,38 +103,42 @@ namespace ZBC_OOP_Battleship
                                                   mainPanel.Width - 1,
                                                   mainPanel.Height - 1));
 
+            // Draw the crosses on the hit sections
             foreach (ShipSection section in shipData.Sections)
             {
                 if (section.IsHit)
                 {
-                    if (ShipData.Direction == ShipDirection.East)
+                    if (shipData.Direction == ShipDirection.East)
                     {
-                        e.Graphics.DrawLine(crossPen,
-                                            Constants.CellSize * section.SectionNumber + 6,
-                                            6,
-                                            Constants.CellSize * section.SectionNumber + Constants.CellSize - 6,
-                                            Constants.CellSize - 6);
+                        // The line from top left to bottom right
+                        e.Graphics.DrawLine(crossPen,                                       
+                                            Constants.CellSize * section.SectionNumber + crossMargin,                         // x1
+                                            crossMargin,                                                                      // y1
+                                            Constants.CellSize * section.SectionNumber + Constants.CellSize - crossMargin,    // x2
+                                            Constants.CellSize - crossMargin);                                                // y2
 
+                        // The line from top right to bottom left
                         e.Graphics.DrawLine(crossPen,
-                                           Constants.CellSize * section.SectionNumber + Constants.CellSize - 6,
-                                           6,
-                                           Constants.CellSize * section.SectionNumber  + 6,
-                                           Constants.CellSize - 6);
+                                           Constants.CellSize * section.SectionNumber + Constants.CellSize - crossMargin,     // x1
+                                           crossMargin,                                                                       // y1
+                                           Constants.CellSize * section.SectionNumber  + crossMargin,                         // x2
+                                           Constants.CellSize - crossMargin);                                                 // y2
                     } 
                     else
                     {
+                        // The line from top left to bottom right
                         e.Graphics.DrawLine(crossPen,
-                                           6,                                                  // x1
-                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - 34,     // y1
-                                           Constants.CellSize - 6,                             // x2
-                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - 6 );    // y2 
+                                           crossMargin,                                                                                          // x1
+                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - 34,               // y1
+                                           Constants.CellSize - crossMargin,                                                                     // x2
+                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - crossMargin );    // y2 
 
-
+                        // The line from top right to bottom left
                         e.Graphics.DrawLine(crossPen,
-                                           Constants.CellSize - 6,
-                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - 34,
-                                           6,
-                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - 6);
+                                           Constants.CellSize - crossMargin,                                                                   // x1
+                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - 34,             // y1
+                                           crossMargin,                                                                                        // x2
+                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber - crossMargin);   // y2
                     }
 
                   

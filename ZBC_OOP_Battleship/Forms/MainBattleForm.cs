@@ -13,24 +13,29 @@ namespace ZBC_OOP_Battleship.Forms
 {
     public partial class MainBattleForm : Form
     {
+        // The boards
         private PlayerBoard PlayerOneBoard;
         private EnemyBoard PlayerOneEnemyBoard;
 
         private PlayerBoard PlayerTwoBoard;
         private EnemyBoard PlayerTwoEnemyBoard;
 
+        // References
         private BattleControl _control;
 
+        // Game states
         private GameState localGameState;
         private GameState mainGameState;
-        private Label overHeadLabel;
-        //private Button btn_SetupNext;
-        private Label label_Instruction;
 
+        // Text
+        private Label overHeadLabel;
+        private Label label_Instruction;
         private Label label_Interstitial;
 
+        // If the current turn already saw action
         private bool turnPlayed;
 
+        // Creation mode
         private List<Battleship> playerOneShips;
         private List<Battleship> playerTwoShips;
 
@@ -130,6 +135,11 @@ namespace ZBC_OOP_Battleship.Forms
 
         }
 
+        /// <summary>
+        /// What happens at the end of a match
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MatchEndEvent(object sender, MatchEndEventArgs e)
         {
             localGameState = GameState.GameEnd;
@@ -147,30 +157,41 @@ namespace ZBC_OOP_Battleship.Forms
 
         }
 
+        /// <summary>
+        /// Called when you click on the enemy board in a cell, when allowed to do so
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="source"></param>
         private void EnemyCellClicked(Point cell, PlayerIdentifier source)
         {
+            // Avoid double events
             if (turnPlayed)
             {
                 return;
             }
 
+            // Or if the game ended already
             if(localGameState == GameState.GameEnd)
             {
                 return;
             }
 
+            // If the slot was already attempted
             if(source == PlayerIdentifier.PlayerOne && !PlayerOneEnemyBoard.IsSlotValidTarget(cell))
             {
                 return;
             }
 
-            if(source == PlayerIdentifier.PlayerTwo && !PlayerTwoEnemyBoard.IsSlotValidTarget(cell))
+            // If the slot was already attempted
+            if (source == PlayerIdentifier.PlayerTwo && !PlayerTwoEnemyBoard.IsSlotValidTarget(cell))
             {
                 return;
             }
 
+            // Register the turn as played
             turnPlayed = true;
 
+            // Get the result of the hit
             HitResult hitResult = _control.RegisterHitInput(cell, source);
 
             if(hitResult == HitResult.Invalid)
@@ -190,6 +211,11 @@ namespace ZBC_OOP_Battleship.Forms
 
         }
 
+        /// <summary>
+        /// Called when the game state changes in the Logic class
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void StateChangeEvent(object sender, StateChangeEventArgs args)
         {
             // Change it regardless
@@ -213,10 +239,17 @@ namespace ZBC_OOP_Battleship.Forms
             }
         }
 
+        /// <summary>
+        /// Registers any key press, regardless of what control is in focus
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Enter)
             {
+                // Do something specific depending on the current game state
                 switch (localGameState)
                 {
                     case GameState.GameEnd:
@@ -298,6 +331,9 @@ namespace ZBC_OOP_Battleship.Forms
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        /// <summary>
+        /// Lodas the start setup
+        /// </summary>
         private void StartSetUp()
         {
             PlayerOneBoard.CenterHorizontalLocation(this.Width, 100);
@@ -312,127 +348,18 @@ namespace ZBC_OOP_Battleship.Forms
             label_Instruction.Text = "Press ENTER to go to Player 2 setup.";
             localGameState = GameState.PlayerOneSettingUp;
         }
-
-        private Point GetCellFromCoords(int x, int y)
-        {
-            int cellX = x / Constants.CellSize;
-            int cellY = y / Constants.CellSize;
-
-            return new Point(cellX, cellY);
-        }
-
-        private Point GetTopLeftCellCoords(int cellX, int cellY)
-        {
-            return new Point(Constants.CellSize * cellX, Constants.CellSize * cellY);
-        }
-
-        private Panel DrawPlayerBoard(int locX, int locY)
-        {
-            // The header panel
-            Panel mainPanel = new Panel();
-            mainPanel.Size = new Size(Constants.HeaderPanelSize, Constants.HeaderPanelSize);
-            mainPanel.Location = new Point(locX, locY);
-            mainPanel.BorderStyle = BorderStyle.FixedSingle;
-
-            mainPanel.Paint += HeaderPanelPaint;
-
-
-            //
-            // Checkboard panel
-            //
-
-            Panel battlePanel = new Panel();
-            battlePanel.Size = new Size(Constants.BattlePanelSize, Constants.BattlePanelSize);
-            battlePanel.Location = new Point(Constants.CellSize, Constants.CellSize);
-            battlePanel.BorderStyle = BorderStyle.FixedSingle;
-
-            battlePanel.Paint += BattlePanelPaint;
-            //battlePanel.MouseMove += checkerPanel;
-
-            mainPanel.Controls.Add(battlePanel);
-
-            this.Controls.Add(mainPanel);
-
-            return mainPanel;
-        }
-
-        private void HeaderPanelPaint(object sender, PaintEventArgs e)
-        {
-            Panel p = sender as Panel;
-
-            // Draw grey background on headers
-            SolidBrush headersBG = new SolidBrush(Color.FromArgb(150, 150, 150, 150));
-            e.Graphics.FillRectangle(headersBG, new Rectangle(Constants.CellSize, 0, p.Width - Constants.CellSize, Constants.CellSize));
-            e.Graphics.FillRectangle(headersBG, new Rectangle(0, Constants.CellSize, Constants.CellSize, p.Height - Constants.CellSize));
-
-            // Text
-            SolidBrush textBrush = new SolidBrush(Color.FromArgb(190, 100, 100, 100));
-            Font textFont = new Font(FontFamily.GenericSansSerif, 18);
-
-            for (int letters = 0; letters < 10; letters++)
-            {
-                e.Graphics.DrawString(((char)(65 + letters)).ToString(), textFont, textBrush, 48 + Constants.CellSize * letters, 6);
-            }
-
-            int numbersX = 10;
-
-            for (int numbers = 1; numbers < 11; numbers++)
-            {
-                if (numbers >= 10) numbersX = 2;
-                e.Graphics.DrawString(numbers.ToString(), textFont, textBrush, numbersX, 5 + Constants.CellSize * numbers);
-            }
-        }
-
-        private void BattlePanelPaint(object sender, PaintEventArgs e)
-        {
-            int xPos = 0;
-            int yPos = 0;
-
-            Panel p = sender as Panel;
-
-            // Sea background
-            SolidBrush bgBrush = new SolidBrush(Color.FromArgb(100, 199, 229, 237));
-            e.Graphics.FillRectangle(bgBrush, new Rectangle(0, 0, p.Width, p.Height));
-
-
-            // Draw grid
-            Pen gridPen = new Pen(new SolidBrush(Color.Gray));
-            gridPen.Width = 2;
-
-            for (int x = 0; x < 10; x++)
-            {
-                for (int y = 0; y < 10; y++)
-                {
-                    e.Graphics.DrawLine(gridPen, new Point(xPos, yPos + Constants.CellSize * y),
-                                             new Point(Constants.BattlePanelSize, yPos + Constants.CellSize * y));
-                }
-
-                e.Graphics.DrawLine(gridPen, new Point(xPos + Constants.CellSize * x, yPos),
-                                             new Point(xPos + Constants.CellSize * x, Constants.BattlePanelSize));
-            }
-
-        }
-
-       
-
+    
+        /// <summary>
+        /// Changes settings for a turn end
+        /// </summary>
         private void TurnEnd()
         {
             overHeadLabel.Text = "Press ENTER to end turn.";
         }
 
-
-        private void ShowInterplayScreen()
-        {
-            PlayerOneBoard.Hide();
-            PlayerOneEnemyBoard.Hide();
-
-            PlayerTwoBoard.Hide();
-            PlayerTwoEnemyBoard.Hide();
-
-            label_Interstitial.Visible = true;
-            label_Interstitial.Text = "Press ENTER to start PLAYER 2 turn.";
-        }
-
+        /// <summary>
+        /// Loads settings for the beginning of a game
+        /// </summary>
         private void InitiateGame()
         {
             localGameState =  _control.StartMatch(playerOneShips, playerTwoShips);
@@ -471,11 +398,5 @@ namespace ZBC_OOP_Battleship.Forms
             label_Instruction.Text = "Player ONE: Make your move.";
 
         }
-
-        private void btn_SetupNextClick(object sender, EventArgs e)
-        {
-            
-        }
-
     }
 }

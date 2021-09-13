@@ -13,8 +13,6 @@ namespace ZBC_OOP_Battleship
                
         public override void UpdateBoard(List<Battleship> ships)
         {
-            activeShips.Clear();
-
             foreach (Battleship ship in ships)
             {
                 ShipDisplay shipDisplay = new ShipDisplay(ship, BattlePanel);
@@ -28,7 +26,6 @@ namespace ZBC_OOP_Battleship
                     shipDisplay.SetLocation(GetTopLeftCellCoords(ship.StartCell.X, ship.StartCell.Y));
                 }
 
-                activeShips.Add(shipDisplay);
             }
         }
 

@@ -20,12 +20,19 @@ namespace ZBC_OOP_Battleship
 
         private GameState gameState;
 
+        /// <summary>
+        /// The current state of the game
+        /// </summary>
         public GameState GameState
         {
             get { return gameState; }
             set { gameState = value; OnStateChange(value); }
         }
 
+        /// <summary>
+        /// Call the event for a state change
+        /// </summary>
+        /// <param name="state"></param>
         private void OnStateChange(GameState state)
         {
             StateChange?.Invoke(this, new StateChangeEventArgs(state));
@@ -37,27 +44,49 @@ namespace ZBC_OOP_Battleship
             turnHasPlayed = false;
         }
 
+        /// <summary>
+        /// Creates the player one board
+        /// </summary>
+        /// <param name="ships"></param>
         private void CreatePlayerOneBoard(List<Battleship> ships)
         {
             playerOneBoard = new BattleBoard(ships);
 
         }
 
+        /// <summary>
+        /// Creates the player two board
+        /// </summary>
+        /// <param name="ships"></param>
         private void CreatePlayerTwoBoard(List<Battleship> ships)
         {
             playerTwoBoard = new BattleBoard(ships);
         }
 
+        /// <summary>
+        /// Returns the ships owned by player one
+        /// </summary>
+        /// <returns></returns>
         public List<Battleship> GetPlayerOneShips()
         {
             return playerOneBoard.Battleships;
         }
 
+        /// <summary>
+        /// Returns the ships owned by player two
+        /// </summary>
+        /// <returns></returns>
         public List<Battleship> GetPlayerTwoShips()
         {
             return playerTwoBoard.Battleships;
         }
 
+        /// <summary>
+        /// Call this from the UI to attempt a hit
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public HitResult RegisterHitInput(Point cell, PlayerIdentifier source)
         {
 
@@ -67,18 +96,21 @@ namespace ZBC_OOP_Battleship
                 return HitResult.Unsuccessful;
             }
 
+            // Bad
             if(gameState == GameState.PlayerOneTurn && source == PlayerIdentifier.PlayerTwo)
             {
                 OnStateChange(gameState);
                 return HitResult.Unsuccessful;
             }
 
+            // Bad
             if (gameState == GameState.PlayerTwoTurn && source == PlayerIdentifier.PlayerOne)
             {
                 OnStateChange(gameState);
                 return HitResult.Unsuccessful;
             }
 
+            // Use the right board
             BattleBoard board;
 
             if (gameState == GameState.PlayerOneTurn)
@@ -93,19 +125,23 @@ namespace ZBC_OOP_Battleship
 
             turnHasPlayed = true;
 
+            // If it's hit
             if (board.IsShipHit(cell))
             {
+                // If all the ships have been destroyed
                 if (ShouldMatchEnd(board))
                 {
                     EndMatch();
                     return HitResult.Successful;
                 }
 
+                // Hit
                 ChangeTurn();
                 return HitResult.Successful;
             }
             else
             {
+                // No hit
                 ChangeTurn();
                 return HitResult.Unsuccessful;
             }
@@ -114,6 +150,12 @@ namespace ZBC_OOP_Battleship
 
         }
 
+        /// <summary>
+        /// Sets up things for a match start
+        /// </summary>
+        /// <param name="playerOneShips"></param>
+        /// <param name="playerTwoShips"></param>
+        /// <returns></returns>
         public GameState StartMatch(List<Battleship> playerOneShips, List<Battleship> playerTwoShips)
         {
             CreatePlayerOneBoard(playerOneShips);
@@ -122,6 +164,9 @@ namespace ZBC_OOP_Battleship
             return gameState;
         }
 
+        /// <summary>
+        /// Forces the end of a game
+        /// </summary>
         private void EndMatch()
         {
             MatchEndEventArgs args = new MatchEndEventArgs();
@@ -138,6 +183,11 @@ namespace ZBC_OOP_Battleship
             MatchEnd?.Invoke(this, args);            
         }
 
+        /// <summary>
+        /// Checks if all the ships on that board are destroyed
+        /// </summary>
+        /// <param name="board"></param>
+        /// <returns></returns>
         private bool ShouldMatchEnd(BattleBoard board)
         {
             foreach (Battleship ship in board.Battleships)
@@ -151,6 +201,9 @@ namespace ZBC_OOP_Battleship
             return true;
         }
 
+        /// <summary>
+        /// Changes turn (and changing the gamestate sends an event)
+        /// </summary>
         public void ChangeTurn()
         {
             if(GameState == GameState.PlayerOneTurn)
@@ -166,7 +219,7 @@ namespace ZBC_OOP_Battleship
 
             
         }
-
+        
         public bool RequestShipMovement(Battleship ship, MovementDirection direction)
         {
             BattleBoard board;
