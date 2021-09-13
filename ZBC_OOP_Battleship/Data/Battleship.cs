@@ -97,12 +97,13 @@ namespace ZBC_OOP_Battleship
 
             for (int i = 0; i < sections.Count; i++)
             {
-                sections[i].IsHit = true;
+                sections[i].IsHit = false;
             }
         }
 
         public void RegisterHit(Point gridCell)
         {
+            Console.WriteLine($"Hit at {gridCell}");
             // Set the hit
             for (int i = 0; i < sections.Count; i++)
             {

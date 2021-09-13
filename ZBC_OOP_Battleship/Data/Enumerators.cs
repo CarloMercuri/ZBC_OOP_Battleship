@@ -19,7 +19,7 @@ namespace ZBC_OOP_Battleship
         Invalid
     }
 
-    public enum PlayerInputSource
+    public enum PlayerIdentifier
     {
         PlayerOne,
         PlayerTwo

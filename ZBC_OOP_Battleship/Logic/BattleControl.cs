@@ -11,6 +11,7 @@ namespace ZBC_OOP_Battleship
     {
         // events
         public event EventHandler<StateChangeEventArgs> StateChange;
+        public event EventHandler<MatchEndEventArgs> MatchEnd;
 
         private BattleBoard playerOneBoard;
         private BattleBoard playerTwoBoard;
@@ -25,7 +26,7 @@ namespace ZBC_OOP_Battleship
             set { gameState = value; OnStateChange(value); }
         }
 
-        public void OnStateChange(GameState state)
+        private void OnStateChange(GameState state)
         {
             StateChange?.Invoke(this, new StateChangeEventArgs(state));
         }
@@ -57,7 +58,7 @@ namespace ZBC_OOP_Battleship
             return playerTwoBoard.Battleships;
         }
 
-        public HitResult RegisterHitInput(Point cell, PlayerInputSource source)
+        public HitResult RegisterHitInput(Point cell, PlayerIdentifier source)
         {
 
             // avoid multiple inputs in the same turn
@@ -66,13 +67,15 @@ namespace ZBC_OOP_Battleship
                 return HitResult.Unsuccessful;
             }
 
-            if(gameState == GameState.PlayerOneTurn && source == PlayerInputSource.PlayerTwo)
+            if(gameState == GameState.PlayerOneTurn && source == PlayerIdentifier.PlayerTwo)
             {
+                OnStateChange(gameState);
                 return HitResult.Unsuccessful;
             }
 
-            if (gameState == GameState.PlayerTwoTurn && source == PlayerInputSource.PlayerOne)
+            if (gameState == GameState.PlayerTwoTurn && source == PlayerIdentifier.PlayerOne)
             {
+                OnStateChange(gameState);
                 return HitResult.Unsuccessful;
             }
 
@@ -80,11 +83,11 @@ namespace ZBC_OOP_Battleship
 
             if (gameState == GameState.PlayerOneTurn)
             {
-                board = playerOneBoard;
+                board = playerTwoBoard;
             }
             else
             {
-                board = playerTwoBoard;
+                board = playerOneBoard;
             }
 
 
@@ -95,6 +98,7 @@ namespace ZBC_OOP_Battleship
                 if (ShouldMatchEnd(board))
                 {
                     EndMatch();
+                    return HitResult.Successful;
                 }
 
                 ChangeTurn();
@@ -105,7 +109,7 @@ namespace ZBC_OOP_Battleship
                 ChangeTurn();
                 return HitResult.Unsuccessful;
             }
-
+            
 
 
         }

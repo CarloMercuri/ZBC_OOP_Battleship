@@ -92,7 +92,13 @@ namespace ZBC_OOP_Battleship
             {
                 if (section.IsHit)
                 {
-                    if(ShipData.Direction == ShipDirection.East)
+                    //e.Graphics.DrawLine(crossPen,
+                    //                    Constants.CellSize * section.SectionNumber + 6,
+                    //                    6,
+                    //                    Constants.CellSize * section.SectionNumber + Constants.CellSize - 6,
+                    //                    Constants.CellSize - 6);
+
+                    if (ShipData.Direction == ShipDirection.East)
                     {
                         e.Graphics.DrawLine(crossPen,
                                             Constants.CellSize * section.SectionNumber + 6,
@@ -108,11 +114,17 @@ namespace ZBC_OOP_Battleship
                     } 
                     else
                     {
+                        //e.Graphics.DrawLine(crossPen,
+                        //                    6,                                                  // x1
+                        //                    Constants.CellSize * section.SectionNumber + 6,     // y1
+                        //                    Constants.CellSize - 6,                             // x2
+                        //                    Constants.CellSize * section.SectionNumber  + Constants.CellSize - 6);    // y2
+
                         e.Graphics.DrawLine(crossPen,
-                                            6,                                                  // x1
-                                            Constants.CellSize * section.SectionNumber + 6,     // y1
-                                            Constants.CellSize - 6,                             // x2
-                                            Constants.CellSize * section.SectionNumber  + Constants.CellSize - 6);    // y2
+                                           6,                                                  // x1
+                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber + 6,     // y1
+                                           Constants.CellSize - 6,                             // x2
+                                           Constants.CellSize * shipData.Lenght - Constants.CellSize * section.SectionNumber + Constants.CellSize - 6);    // y2
 
                         e.Graphics.DrawLine(crossPen,
                                            Constants.CellSize - 6,

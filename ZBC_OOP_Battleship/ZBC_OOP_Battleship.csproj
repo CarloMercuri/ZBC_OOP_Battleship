@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\MatchEndEventArgs.cs" />
     <Compile Include="Events\StateChangeEventArgs.cs" />
     <Compile Include="GUI\EnemyBoard.cs" />
     <Compile Include="GUI\PlayerBoard.cs" />

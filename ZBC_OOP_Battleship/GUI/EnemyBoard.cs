@@ -17,7 +17,8 @@ namespace ZBC_OOP_Battleship
         private Pen crossPen;
         private int circleRadius = 15;
 
-        public override void CreatePanel(Control parentControl, bool playerBoard, PlayerInputSource source, int locX = 0, int locY = 0)
+
+        public override void CreatePanel(Control parentControl, bool playerBoard, PlayerIdentifier source, int locX = 0, int locY = 0)
         {
             crossPen = new Pen(Color.Red, 2);
             circlePen = new Pen(Color.Blue, 3);

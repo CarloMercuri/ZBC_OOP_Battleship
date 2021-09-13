@@ -13,9 +13,9 @@ namespace ZBC_OOP_Battleship
         private Panel mainPanel { get; set; }
         private Panel battlePanel;
 
-        private PlayerInputSource playerSource;
+        private PlayerIdentifier playerSource;
 
-        public PlayerInputSource PlayerSource
+        public PlayerIdentifier PlayerSource
         {
             get { return playerSource; }
             private set { playerSource = value; }
@@ -49,7 +49,7 @@ namespace ZBC_OOP_Battleship
 
         }
 
-        public virtual void CreatePanel(Control parentControl, bool playerBoard, PlayerInputSource source, int locX = 0, int locY = 0)
+        public virtual void CreatePanel(Control parentControl, bool playerBoard, PlayerIdentifier source, int locX = 0, int locY = 0)
         {
             activeShips = new List<ShipDisplay>();
             playerSource = source;
@@ -116,7 +116,7 @@ namespace ZBC_OOP_Battleship
             mainPanel.Location = new Point(x, formHeight / 2 - mainPanel.Height / 2);
         }
 
-        public void AddClickEvent(Action<Point, PlayerInputSource> method, PlayerInputSource source)
+        public void AddClickEvent(Action<Point, PlayerIdentifier> method, PlayerIdentifier source)
         {
             // TO-DO: Find out the better way
             battlePanel.Click += (sender, args) =>
