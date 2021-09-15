@@ -219,43 +219,7 @@ namespace ZBC_OOP_Battleship
 
             
         }
-        
-        public bool RequestShipMovement(Battleship ship, MovementDirection direction)
-        {
-            BattleBoard board;
-
-            if (GameState == GameState.PlayerOneTurn)
-            {
-                board = playerOneBoard;
-            }
-            else
-            {
-                board = playerTwoBoard;
-            }
-            
-
-            Point vector = GetMovementVector(direction);
-
-            foreach(ShipSection section in ship.Sections)
-            {
-                Point newPoint = new Point(section.SectionCell.X + vector.X, section.SectionCell.Y + vector.Y);
-
-                if(board.CellContainsDifferentShip(ship, newPoint))
-                {
-                    return false;
-                }
-            }
-
-            // Actually do it
-            for (int i = 0; i < ship.Sections.Count; i++)
-            {
-                ship.Sections[i].SectionCell = new Point(ship.Sections[i].SectionCell.X + vector.X,
-                                                         ship.Sections[i].SectionCell.Y + vector.Y);
-            }
-
-            return true;
-        }
-
+  
         private Point GetMovementVector(MovementDirection direction)
         {
             Point vector = new Point(0, 0);
@@ -279,12 +243,6 @@ namespace ZBC_OOP_Battleship
 
             return vector;
         }
-
-        private bool IsShipLocationValid(Point location, Battleship ship)
-        {
-            return false;
-        }
-
 
     }
 }

@@ -122,9 +122,15 @@ namespace ZBC_OOP_Battleship.Forms
             playerOneShips.Add(new Battleship(new Point(2, 4), 5, ShipDirection.East));
             playerOneShips.Add(new Battleship(new Point(1, 5), 2, ShipDirection.North));
             playerOneShips.Add(new Battleship(new Point(5, 9), 4, ShipDirection.North));
+            playerOneShips.Add(new Battleship(new Point(7, 4), 2, ShipDirection.East));
+            playerOneShips.Add(new Battleship(new Point(9, 9), 4, ShipDirection.North));
 
             playerTwoShips = new List<Battleship>();
             playerTwoShips.Add(new Battleship(new Point(3, 2), 2, ShipDirection.East));
+            playerTwoShips.Add(new Battleship(new Point(1, 2), 5, ShipDirection.East));
+            playerTwoShips.Add(new Battleship(new Point(5, 2), 2, ShipDirection.North));
+            playerTwoShips.Add(new Battleship(new Point(8, 8), 3, ShipDirection.North));
+            playerTwoShips.Add(new Battleship(new Point(9, 5), 4, ShipDirection.North));
 
 
 
@@ -395,7 +401,7 @@ namespace ZBC_OOP_Battleship.Forms
 
 
             localGameState = GameState.PlayerOneTurn;
-            label_Instruction.Text = "Player ONE: Make your move.";
+            overHeadLabel.Text = "Player ONE: Make your move.";
 
         }
     }
